@@ -55,9 +55,20 @@ public class GrafoMatriz {
         if(va < 0 || vb < 0) throw new Exception ("El vértice no existe");
         matAd[va][vb] = 1;
     }
+
+    public void borrarArco(String a, String b) throws Exception{
+        int v1 = numVertice(a);
+        int v2 = numVertice(b);
+        if(v1 < 0 || v2 < 0){
+            throw new Exception ("El vértice no existe");
+        }
+        Arco ab = new Arco(v2);
+        verts[v1].lad.remove(ab);
+    }
     
     
     
     
     
 }
+
