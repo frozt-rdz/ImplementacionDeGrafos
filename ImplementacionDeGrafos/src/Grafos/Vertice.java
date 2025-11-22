@@ -1,4 +1,5 @@
 package clases;
+import java.util.LinkedList;
 
 /**
  *
@@ -31,4 +32,5 @@ public class Vertice {
         return nombre + " (" + numvertice + ")";
     }
 }
+
 
