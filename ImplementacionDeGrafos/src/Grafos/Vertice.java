@@ -7,10 +7,12 @@ package clases;
 public class Vertice {
     String nombre;
     int numvertice;
+    LinkedList<Object> lad;
     
     public Vertice(String x){
         nombre = x;
         numvertice = -1;
+        lad = new LinkedList();
     }
     
     public String nomVertice(){ //identificador del vertice
@@ -29,3 +31,4 @@ public class Vertice {
         return nombre + " (" + numvertice + ")";
     }
 }
+
