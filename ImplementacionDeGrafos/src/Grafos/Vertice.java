@@ -1,4 +1,4 @@
-package clases;
+package Grafos;
 import java.util.LinkedList;
 
 /**
