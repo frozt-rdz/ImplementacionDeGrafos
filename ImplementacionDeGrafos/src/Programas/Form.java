@@ -21,7 +21,8 @@ public class Form extends javax.swing.JFrame {
     Visualizador f;
     ArrayList<VerticePanel> vertices;
     public Form() {
-        initComponents();
+        initComponents(); 
+        // sera?
         vertices = new ArrayList(); 
         f = new Visualizador(vertices);
         jPanel1.setLayout(new java.awt.BorderLayout());
