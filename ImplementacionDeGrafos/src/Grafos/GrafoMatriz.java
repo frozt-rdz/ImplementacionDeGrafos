@@ -54,14 +54,13 @@ public class GrafoMatriz {
          vb;
         va  = numVertice(a);
         vb = numVertice(b);
-
-        if (va  < 0 || vb < 0) {
-            throw new Exception("El vértice no existe");
-        }
+        if( va < 0 || vb < 0) throw new Exception ("El vertice no existe");
         matAd[va][vb] = 1;
     }
+    
+    public void nuevoArco(int va, int vb) throws Exception{ 
+        if(va < 0 || vb < 0) throw new Exception ("El vertice no existe");
 
-    public void nuevoArco(int va, int vb) throws Exception { //Otra version para añadir arco, recibe directamente los numeros de vertice del arco
         if (va  < 0 || vb < 0) {
             throw new Exception("El vértice no existe");
         }
