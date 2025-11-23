@@ -258,7 +258,6 @@ public class Visualizador extends javax.swing.JPanel {
                         e = new ArcoPanel(primero,u,peso);
                     }
                     arcos.add(e);
-                    grafo.nuevoArco(primero.getNombre(), u.getNombre(),peso);
                     
                     primero = null;
                     repaint();
