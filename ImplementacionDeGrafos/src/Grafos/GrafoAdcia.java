@@ -130,19 +130,19 @@ public class GrafoAdcia {
         }
         m[v] = 0;
         pila.push(v);
-        while(!pila.isEmpty()){
+        while (!pila.isEmpty()) {
             Integer cw;
             //cw = (Integer) pila.pop();
             w = pila.pop();
-            System.out.println("Vertice "+g.tablAdc[w].nombre+" visitado");
+            System.out.println("Vertice " + g.tablAdc[w].nombre + " visitado");
             //Iterator<Integer> iterador = new Iterator<>(g.tablAdc[w].lad);
             Iterator<Integer> it = g.tablAdc[w].lad.iterator();
-            while(it.hasNext()){
-                int k =it.next();
-                if(m[k] == CLAVE){
+            while (it.hasNext()) {
+                int k = it.next();
+                if (m[k] == CLAVE) {
                     pila.push(k);
                     m[k] = m[w] + 1;
-                    
+
                 }
             }
         }
