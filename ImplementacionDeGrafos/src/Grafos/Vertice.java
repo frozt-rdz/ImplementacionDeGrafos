@@ -1,4 +1,4 @@
-package clases;
+package Grafos;
 import java.util.LinkedList;
 
 /**
@@ -31,6 +31,8 @@ public class Vertice {
     public String toString(){ //caracteristicas del vertice
         return nombre + " (" + numvertice + ")";
     }
+    
+    public String getNombre(){return this.nombre;}
 }
 
 
