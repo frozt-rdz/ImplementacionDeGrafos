@@ -24,6 +24,11 @@ public class ArcoPanel extends Arco {
         this.fin = fin;
         this.peso = peso;
     }
+    
+    @Override
+    public String toString(){
+        return inicio.getNombre() + " -> " + fin.getNombre();
+    }
 
     public VerticePanel getInicio() {
         return inicio;

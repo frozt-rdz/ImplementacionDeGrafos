@@ -15,6 +15,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
@@ -34,8 +35,10 @@ public class Visualizador extends javax.swing.JPanel {
     boolean valorado = false;
     final int DIAMETRO = 40;
     final int RADIO = DIAMETRO/2;
+    private Runnable alAgregarArco;
     ArrayList<ArcoPanel> arcos;
     VerticePanel primero;
+    VerticePanel nodoMoviendo=null;//:p
     
     public Visualizador(ArrayList<VerticePanel> v) {
         initComponents();
@@ -43,6 +46,40 @@ public class Visualizador extends javax.swing.JPanel {
         arcos = new ArrayList();
         setPreferredSize(new Dimension(618,300));
         this.setBackground(Color.WHITE);
+        
+        // Detectar click! con mouseListenter
+        // guia: https://docs.oracle.com/javase/8/docs/api/java/awt/event/MouseListener.html
+        this.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent evt){
+                nodoMoviendo = ClickDentro(evt.getX(), evt.getY());
+                
+                if(nodoMoviendo!=null){
+                    System.out.println("Agarrando: "+nodoMoviendo.getNombre());
+                }
+            }
+            @Override
+            public void mouseReleased(MouseEvent evt){
+                nodoMoviendo=null;
+                System.out.println("dejando ir...");
+            }
+        });
+        
+        // La diferencia entre MouseAdapter y MouseMotionAdapter es que uno "escucha" (listen) clicks y el otro
+        // el desplazamiento del mouse!
+        
+        // guia: https://docs.oracle.com/javase/8/docs/api/java/awt/event/MouseMotionListener.html
+        this.addMouseMotionListener(new java.awt.event.MouseMotionAdapter(){
+            @Override
+            public void mouseDragged(MouseEvent evt){
+                if(nodoMoviendo!=null){
+                    nodoMoviendo.setX(evt.getX());
+                    nodoMoviendo.setY(evt.getY());
+                    repaint();
+                }
+            }
+        });
+        
     }
 
     /**
@@ -81,7 +118,7 @@ public class Visualizador extends javax.swing.JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON); // suavizar texto
         
         Font fuenteBonita = new Font("Segoe UI", Font.BOLD ,14); 
-        Font fuentePeso = new Font("Segoe UI", Font.ITALIC ,18); 
+        Font fuentePeso = new Font("Segoe UI", Font.BOLD ,18); 
         
         for(ArcoPanel e: arcos){
             int Ix = e.getInicio().getX();
@@ -93,6 +130,13 @@ public class Visualizador extends javax.swing.JPanel {
             
             if(valorado) g2d.setColor(Color.GRAY);
             g2d.drawLine(Ix,Iy,Fx,Fy);
+            
+            // tan tan tann, ahora, y si es bucle?
+            if(Ix==Fx && Iy==Fy){
+                g2d.setColor(Color.ORANGE);
+                g2d.drawOval(Ix-23,Iy-23, RADIO,RADIO);
+                g2d.setColor(Color.BLACK);
+            }
         }
         
         g2d.setColor(Color.BLACK);
@@ -117,14 +161,34 @@ public class Visualizador extends javax.swing.JPanel {
         
         if(dirigido){
             for(ArcoPanel e: arcos){
-                int Fx = e.getFin().getX();
-                int Fy = e.getFin().getY();
+                int x1 = e.getInicio().getX();
+                int y1 = e.getInicio().getY();
+                int x2 = e.getFin().getX();
+                int y2 = e.getFin().getY();
                 
-                System.out.println("Dibujando circulito");
-                g2d.setColor(Color.red);
-                g2d.setStroke(new BasicStroke(3));
-                g2d.drawOval(Fx, Fy, 10, 10);
+                if(x1!=x2&&y1!=y2){
+                // inclinacion de nodo origen a nodo destino
+                double angulo = Math.atan2(y2 - y1, x2 - x1);
 
+                // Pos original
+                AffineTransform transformacionOriginal = g2d.getTransform();
+
+                // Movernos a nodo destino
+                g2d.translate(x2, y2);  // Mover ORIGEN al NODO destino
+                // El origen ya no esta en (0,0), ahora esta en (x2,y2) :)
+                g2d.rotate(angulo - Math.PI / 2); // giramos hacia ARRIBA, por eso le restamos 90 grados
+
+                int[] xPuntos = {0, -10, 10}; 
+                int[] yPuntos = {-(RADIO), -35, -35};
+                
+                // (0,RADIO) borde del vertice
+                // (-10,-35) y (10,35) base triangulo
+                
+                g2d.fillPolygon(xPuntos, yPuntos, 3);
+
+                // restauramos
+                g2d.setTransform(transformacionOriginal);
+                }
             }
         }
         
@@ -137,7 +201,7 @@ public class Visualizador extends javax.swing.JPanel {
                 int Fy = e.getFin().getY();
                 // www.youtube.com/watch?v=Lro3Sk4M21s&t=502
                 // gracias profe alex
-                g2d.setColor(Color.RED);
+                g2d.setColor(Color.MAGENTA);
                 g2d.setFont(fuentePeso);
                 String peso;
                 if(e.getPeso()==100000000) peso = "x";
@@ -180,10 +244,12 @@ public class Visualizador extends javax.swing.JPanel {
                         e = new ArcoPanel(primero,u,peso);
                     }
                     arcos.add(e);
-                    
                     primero = null;
-                    
                     repaint();
+                    
+                    if(alAgregarArco!=null){
+                        alAgregarArco.run();
+                    }
                 }
             } else {
                 // no dimos click dentro de un nodo
@@ -222,8 +288,19 @@ public class Visualizador extends javax.swing.JPanel {
     public void setValorado(boolean valorado) {
         this.valorado = valorado;
     }
+
+    public ArrayList<ArcoPanel> getArcos() {
+        return arcos;
+    }
     
+    public void setAlAgregarArco(Runnable alAgregarArco) {
+        this.alAgregarArco = alAgregarArco;
+    }
     
+    public void eliminarArco(ArcoPanel e){
+        arcos.remove(e);
+        repaint();
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
