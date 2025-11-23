@@ -1,4 +1,4 @@
-package clases;
+package Grafos;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -14,6 +14,7 @@ public class GrafoMatriz {
     Vertice[] verts;
     int[][] matAd;
     private static final int CLAVE = -1;
+
     public GrafoMatriz(int mx) {
         matAd = new int[mx][mx];
         verts = new Vertice[mx];
@@ -97,10 +98,8 @@ public class GrafoMatriz {
         m[v] = 0;
         cola.add(v);
         while (!cola.isEmpty()) {
-            //Integer cw;
-            //cw = (Integer) cola.remove();
             w = cola.remove();
-            System.out.println("vertice " + verts[w] + " visitado");
+            System.out.println("vertice " + verts[w].nombre + " (" + m[w] + ") visitado");
             for (int u = 0; u < numeroDeVertices(); u++) {
                 if ((matAd[w][u] == 1) && (m[u] == CLAVE)) {
                     m[u] = m[w] + 1;
@@ -109,6 +108,5 @@ public class GrafoMatriz {
             }
         }
         return m;
-
     }
 }
