@@ -23,7 +23,7 @@ public class Form extends javax.swing.JFrame {
     public Form() {
         initComponents(); 
         // sera?
-        // a ver a ver
+        // a ver a verrr
         vertices = new ArrayList(); 
         f = new Visualizador(vertices);
         jPanel1.setLayout(new java.awt.BorderLayout());
