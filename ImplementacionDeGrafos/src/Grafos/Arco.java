@@ -21,6 +21,10 @@ public class Arco {
         this(d);
         peso = p;
     }
+    
+    public Arco(){
+        
+    }
 
     public int getDestino() {
         return destino;
