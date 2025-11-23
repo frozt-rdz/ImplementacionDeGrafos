@@ -50,8 +50,7 @@ public class GrafoMatriz {
     }
 
     public void nuevoArco(String a, String b) throws Exception { //Añade el arco
-        int va,
-         vb;
+        int va, vb;
         va  = numVertice(a);
         vb = numVertice(b);
         if( va < 0 || vb < 0) throw new Exception ("El vertice no existe");

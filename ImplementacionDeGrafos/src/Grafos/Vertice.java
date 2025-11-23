@@ -28,8 +28,10 @@ public class Vertice {
         numvertice = n;
     }
     
+    @Override
     public String toString(){ //caracteristicas del vertice
-        return nombre + " (" + numvertice + ")";
+//        return nombre + " (" + numvertice + ")";
+        return this.getNombre();
     }
     
     public String getNombre(){return this.nombre;}

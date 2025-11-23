@@ -5,6 +5,7 @@
 package Programas;
 
 import Grafos.ArcoPanel;
+import Grafos.GrafoMatriz;
 import Grafos.VerticePanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -17,6 +18,8 @@ import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -39,11 +42,13 @@ public class Visualizador extends javax.swing.JPanel {
     ArrayList<ArcoPanel> arcos;
     VerticePanel primero;
     VerticePanel nodoMoviendo=null;//:p
+    GrafoMatriz grafo;
     
-    public Visualizador(ArrayList<VerticePanel> v) {
+    public Visualizador(ArrayList<VerticePanel> v,GrafoMatriz g) {
         initComponents();
         vertices = v;
         arcos = new ArrayList();
+        grafo = g;
         setPreferredSize(new Dimension(618,300));
         this.setBackground(Color.WHITE);
         
@@ -227,9 +232,16 @@ public class Visualizador extends javax.swing.JPanel {
             String s = JOptionPane.showInputDialog("Ingresa el valor del vertice: ");
             VerticePanel u = new VerticePanel(x, y, s);
             vertices.add(u);
+            grafo.nuevoVertice(s);
             repaint();
+            
+            if(alAgregarArco!=null){
+                alAgregarArco.run();
+            }
+
         } else if(evt.getButton()==MouseEvent.BUTTON3){ // Click derecho:)
             VerticePanel u = ClickDentro(x,y);
+            int peso = 100000000;
             if(u!=null){
                 if(primero==null){
                     primero = u;
@@ -238,12 +250,15 @@ public class Visualizador extends javax.swing.JPanel {
                     // Se selecciona otro nodo
                     System.out.println("Segundo " +u.getNombre());
                     ArcoPanel e;
-                    if(!valorado) e = new ArcoPanel(primero,u); // e = edge:)
-                    else{
-                        int peso = Integer.parseInt(JOptionPane.showInputDialog("Peso: "));
+                    if(!valorado){
+                        e = new ArcoPanel(primero,u); // e = edge:)
+                        
+                    }else{
+                        peso = Integer.parseInt(JOptionPane.showInputDialog("Peso: "));
                         e = new ArcoPanel(primero,u,peso);
                     }
                     arcos.add(e);
+                    
                     primero = null;
                     repaint();
                     
@@ -293,8 +308,12 @@ public class Visualizador extends javax.swing.JPanel {
         return arcos;
     }
     
-    public void setAlAgregarArco(Runnable alAgregarArco) {
-        this.alAgregarArco = alAgregarArco;
+    public ArrayList<VerticePanel> getVertices(){
+        return vertices;
+    }
+    
+    public void setAlAgregar(Runnable alAgregar) {
+        this.alAgregarArco = alAgregar;
     }
     
     public void eliminarArco(ArcoPanel e){
