@@ -84,27 +84,27 @@ public class GrafoMatriz {
     public int[] recorrerAnchura(String org) throws Exception {
         int w, v;
         int[] m;
-        v = numVertice(org);
+        v = numVertice(org); //Indice del vertice origen, 0 en este caso, se supone
         if (v < 0) {
             throw new Exception("Vertice origen no existe");
         }
-        Queue<Integer> cola = new LinkedList<>();
-        m = new int[numeroDeVertices()];
+        Queue<Integer> cola = new LinkedList<>();//Vamos a utilizar una cola
+        m = new int[numeroDeVertices()]; //Nuestro arreglo depende del numero de vertices de nuestro grafo
         for (int i = 0; i < numeroDeVertices(); i++) {
-            m[i] = CLAVE;
+            m[i] = CLAVE;//Establecemos "distancias" como -1, vertice no visitado
         }
-        m[v] = 0;
-        cola.add(v);
-        while (!cola.isEmpty()) {
-            w = cola.remove();
-            System.out.println("vertice " + verts[w].nombre + " (" + m[w] + ") visitado");
-            for (int u = 0; u < numeroDeVertices(); u++) {
-                if ((matAd[w][u] == 1) && (m[u] == CLAVE)) {
-                    m[u] = m[w] + 1;
-                    cola.add(u);
+        m[v] = 0; //para m[0] = 0, distancia del origen a el mismo, es 0 
+        cola.add(v); //añadimos el vertice A o el cero (indice numerico) a la lista
+        while (!cola.isEmpty()) {//En algun momento saldremos del for y la cola estara vacia (no hay mas vertices)
+            w = cola.remove();//trabajamos con el vertice que saquemos de la cola, iniciamos con el origen
+            System.out.println("vertice " + verts[w].nombre + " (" + m[w] + ") visitado");//Imprimimos el vertice y la informacion de la distancia
+            for (int u = 0; u < numeroDeVertices(); u++) {//Para cada vertice del grafo
+                if ((matAd[w][u] == 1) && (m[u] == CLAVE)) {//Existe un arco y ademas el vertice no ha sido visitado, entonces
+                    m[u] = m[w] + 1;//Distancia a 1 mas que el predecesor
+                    cola.add(u);//añadimos el vertice a la cola
                 }
             }
         }
-        return m;
+        return m;//Hacemos el return de m con las distancias
     }
 }
