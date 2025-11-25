@@ -160,6 +160,7 @@ public class GrafoAdcia {
         for (int i = 0; i < g.numeroDeVertices(); i++) {
             m[i] = CLAVE;//Distancias en -1
         }
+
         m[v] = 0;
         pila.push(v);
            
@@ -183,6 +184,7 @@ public class GrafoAdcia {
         m[v] = 0;//Distancia del origen a si mismo
         pila.push(v);//Vertice origen a la pila
         while (!pila.isEmpty()) {
+>>>>>>> 82ea5637cbce529c5e9ce3f6dd32ad65807374b4
             Integer cw;
             //cw = (Integer) pila.pop();
             w = pila.pop();//Sacamos el vertice de la pila
