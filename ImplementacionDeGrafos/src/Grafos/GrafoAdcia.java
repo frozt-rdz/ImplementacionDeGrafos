@@ -152,14 +152,15 @@ public class GrafoAdcia {
         int v, w;
         Stack<Integer> pila = new Stack<>();
         int[] m;
-        m = new int[g.numeroDeVertices()];
+        m = new int[g.numeroDeVertices()];//Arreglo para guardar distancias
         v = g.numVertice(org);
-        if (v < 0) {
+        if (v < 0) {//Solo si el vertice no existe en el grafo
             throw new Exception("Vertice no existe");
         }
         for (int i = 0; i < g.numeroDeVertices(); i++) {
-            m[i] = CLAVE;
+            m[i] = CLAVE;//Distancias en -1
         }
+<<<<<<< HEAD
         m[v] = 0;
         pila.push(v);
            
@@ -179,17 +180,22 @@ public class GrafoAdcia {
         }
     }
        /*while (!pila.isEmpty()) {
+=======
+        m[v] = 0;//Distancia del origen a si mismo
+        pila.push(v);//Vertice origen a la pila
+        while (!pila.isEmpty()) {
+>>>>>>> 82ea5637cbce529c5e9ce3f6dd32ad65807374b4
             Integer cw;
             //cw = (Integer) pila.pop();
-            w = pila.pop();
+            w = pila.pop();//Sacamos el vertice de la pila
             System.out.println("Vertice " + g.tablAdc[w].nombre + " visitado");
             //Iterator<Integer> iterador = new Iterator<>(g.tablAdc[w].lad);
-            Iterator<Integer> it = g.tablAdc[w].lad.iterator();
-            while (it.hasNext()) {
-                int k = it.next();
-                if (m[k] == CLAVE) {
-                    pila.push(k);
-                    m[k] = m[w] + 1;
+            Iterator<Integer> it = g.tablAdc[w].lad.iterator();//Iterador para el vertice w (adyacencia en lo que respecta a vertices conectados)
+            while (it.hasNext()) {//Mientras aun haya vecinos que revisar
+                int k = it.next();//Indice del vecino que sigue
+                if (m[k] == CLAVE) {//Si no se ha visitado
+                    pila.push(k);//lo agregamos a la pila
+                    m[k] = m[w] + 1;//distancia del antecesor mas 1
 
                 }
             }
