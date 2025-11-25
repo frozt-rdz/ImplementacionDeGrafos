@@ -5,14 +5,19 @@
 package Programas;
 
 import Grafos.ArcoPanel;
+import Grafos.Dijkstra;
 import Grafos.GrafoAdcia;
 import Grafos.GrafoMatriz;
+import Grafos.ResultadoDijkstra;
 import Grafos.VerticePanel;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -72,6 +77,7 @@ public class Form extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jComboBox4 = new javax.swing.JComboBox<>();
         jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -166,6 +172,13 @@ public class Form extends javax.swing.JFrame {
             }
         });
 
+        jButton5.setText("Dijkstra");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -189,10 +202,13 @@ public class Form extends javax.swing.JFrame {
                                     .addComponent(jButton1)
                                     .addGap(18, 18, 18)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(jLabel7)
-                                        .addComponent(jButton4))
-                                    .addContainerGap())
+                                        .addComponent(jButton4)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(86, 86, 86)
+                                            .addComponent(jButton5)))
+                                    .addGap(92, 92, 92))
                                 .addGroup(layout.createSequentialGroup()
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -263,7 +279,9 @@ public class Form extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton5))))
                 .addGap(18, 18, 18)
                 .addComponent(jButton4)
                 .addContainerGap(16, Short.MAX_VALUE))
@@ -347,7 +365,137 @@ public class Form extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
-    private void actualizarArcos(){
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+ try {//inicia Dijkstra
+        if (jComboBox3.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(this, "Selecciona un vertice origen primero");
+            return;
+        }
+        
+        if (!jCheckBox1.isSelected()) {
+            JOptionPane.showMessageDialog(this, 
+                "El grafo debe estar marcado como 'Valorado' para usar Dijkstra");
+            return;
+        }
+        
+        VerticePanel origen = (VerticePanel) jComboBox3.getSelectedItem();
+        
+        GrafoAdcia grafo = crearGrafoDesdeVisualizacion();
+        
+        ResultadoDijkstra resultado = Dijkstra.dijkstra(grafo, origen.getNombre());
+        
+        mostrarTodosLosCaminos(resultado, origen.getNombre());
+        
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error en Dijkstra: " + ex.getMessage());
+        ex.printStackTrace();
+    }
+} 
+
+private void mostrarTodosLosCaminos(ResultadoDijkstra resultado, String origen) {
+    try {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Dijkstra : Camino desde  '").append(origen).append("' \n\n");
+        
+        boolean hayCaminos = false;
+        
+        for (VerticePanel v : f.getVertices()) {
+            String destino = v.getNombre();
+            
+            if (destino.equals(origen)) continue;
+            
+            double distancia = resultado.getDistancia(destino);
+            List<String> camino = resultado.getCamino(destino);
+            
+            if (distancia != Double.MAX_VALUE) {
+                hayCaminos = true;
+                sb.append("Hacia '").append(destino).append("':\n");
+                sb.append("  Distancia: ").append(String.format("%.1f", distancia)).append("\n");
+                sb.append("  Camino: ").append(camino).append("\n\n");
+            }
+        }
+        
+        if (!hayCaminos) {
+            sb.append("No hay caminos hacia otros vértices desde '").append(origen).append("'");
+        }
+        
+        JTextArea textArea = new JTextArea(sb.toString());
+        textArea.setEditable(false);
+        textArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12));
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new java.awt.Dimension(500, 400));
+        
+        JOptionPane.showMessageDialog(this, scrollPane, 
+            "Dijkstra - Caminos desde " + origen, JOptionPane.INFORMATION_MESSAGE);
+        
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+    }    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private GrafoAdcia crearGrafoDesdeVisualizacion() throws Exception {
+    GrafoAdcia grafo = new GrafoAdcia(100);
+    
+    for (VerticePanel v : f.getVertices()) {
+        grafo.nuevoVertice(v.getNombre());
+    }
+    
+    for (ArcoPanel arco : f.getArcos()) {
+        String nombreOrigen = arco.getInicio().getNombre();
+        String nombreDestino = arco.getFin().getNombre();
+        double peso = arco.getPeso();
+        
+        grafo.nuevaArista(nombreOrigen, nombreDestino, peso);
+        
+        if (jComboBox1.getSelectedItem().equals("No dirigido")) {
+            grafo.nuevaArista(nombreDestino, nombreOrigen, peso);
+        }
+    }
+    
+    return grafo;
+}
+
+private void mostrarResultadoDijkstraSimple(ResultadoDijkstra resultado, String origen, String destino) {
+    try {
+        if (!Dijkstra.esAlcanzable(resultado, destino)) {
+            JOptionPane.showMessageDialog(this, 
+                "El vértice '" + destino + "' no es alcanzable desde '" + origen + "'");
+            return;
+        }
+        
+        List<String> camino = resultado.getCamino(destino);
+        double distancia = resultado.getDistancia(destino);
+        StringBuilder mensaje = new StringBuilder();
+        mensaje.append("Dijkstra o camino mas corto\n\n");
+        mensaje.append("Origen: ").append(origen).append("\n");
+        mensaje.append("Destino: ").append(destino).append("\n");
+        mensaje.append("Distancia total: ").append(String.format("%.1f", distancia)).append("\n");
+        mensaje.append("Camino: ").append(camino).append("\n\n");
+        
+        mensaje.append("Detalles del camino:\n");
+        for (int i = 0; i < camino.size(); i++) {
+            mensaje.append("Paso ").append(i).append(": ").append(camino.get(i));
+            if (i < camino.size() - 1) {
+                mensaje.append(" → ");
+            }
+        }
+        
+        JTextArea textArea = new JTextArea(mensaje.toString());
+        textArea.setEditable(false);
+        textArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12));
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new java.awt.Dimension(400, 300));
+        
+        JOptionPane.showMessageDialog(this, scrollPane, 
+            "Resultado Dijkstra", JOptionPane.INFORMATION_MESSAGE);
+            
+        System.out.println("Dikstra camino mas corto");
+        System.out.println(mensaje.toString());
+        
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error mostrando resultados: " + ex.getMessage());
+    }
+}           //termina  dijkstra
+private void actualizarArcos(){
         jComboBox2.removeAllItems();
    
             ArrayList<ArcoPanel> edgs = f.getArcos();
@@ -406,6 +554,7 @@ public class Form extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<Object> jComboBox2;

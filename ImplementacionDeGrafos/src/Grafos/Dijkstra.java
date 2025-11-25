@@ -10,12 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
-/**
- *
- * @author David
- */
 public class Dijkstra {
-     public static ResultadoDijkstra dijkstra(GrafoAdcia grafo, String origen) throws Exception {
+    
+    public static ResultadoDijkstra dijkstra(GrafoAdcia grafo, String origen) throws Exception {
         int numVertices = grafo.numeroDeVertices();
         int origenIdx = grafo.numVertice(origen);
         
@@ -23,12 +20,11 @@ public class Dijkstra {
             throw new Exception("Vértice origen '" + origen + "' no existe");
         }
         
-        // Arreglos q se usan para almacenar resultados
+        // Arreglos para almacenar resultados
         double[] distancias = new double[numVertices];
         int[] predecesores = new int[numVertices];
         boolean[] visitados = new boolean[numVertices];
         
-   
         Arrays.fill(distancias, Double.MAX_VALUE);
         Arrays.fill(predecesores, -1);
         distancias[origenIdx] = 0;
@@ -44,10 +40,11 @@ public class Dijkstra {
             if (visitados[u]) continue;
             visitados[u] = true;
             
- 
-            for (Integer vecinoIdx : grafo.tablAdc[u].lad) {
+            for (Arco arco : grafo.tablAdc[u].lad) {
+                int vecinoIdx = arco.getDestino();
+                double peso = arco.peso; 
+                
                 if (!visitados[vecinoIdx]) {
-                    double peso = 1.0; 
                     double nuevaDistancia = distancias[u] + peso;
                     
                     if (nuevaDistancia < distancias[vecinoIdx]) {
@@ -71,15 +68,6 @@ public class Dijkstra {
         if (origenIdx < 0) {
             throw new Exception("Vértice origen '" + origen + "' no existe");
         }
-        
-      
-        Map<String, Double> mapaPesos = new HashMap<>();
-        for (ArcoPanel arco : arcosConPeso) {
-            String key = arco.getInicio().getNombre() + "->" + arco.getFin().getNombre();
-            mapaPesos.put(key, (double) arco.getPeso());
-        }
-        
-      
         double[] distancias = new double[numVertices];
         int[] predecesores = new int[numVertices];
         boolean[] visitados = new boolean[numVertices];
@@ -98,14 +86,11 @@ public class Dijkstra {
             if (visitados[u]) continue;
             visitados[u] = true;
             
-           
-            for (Integer vecinoIdx : grafo.tablAdc[u].lad) {
+            for (Arco arco : grafo.tablAdc[u].lad) {
+                int vecinoIdx = arco.getDestino();
+                double peso = arco.peso; 
+                
                 if (!visitados[vecinoIdx]) {
-                    String nombreU = grafo.tablAdc[u].nombre;
-                    String nombreV = grafo.tablAdc[vecinoIdx].nombre;
-                    String key = nombreU + "->" + nombreV;
-                    
-                    double peso = mapaPesos.getOrDefault(key, 1.0);
                     double nuevaDistancia = distancias[u] + peso;
                     
                     if (nuevaDistancia < distancias[vecinoIdx]) {
@@ -125,5 +110,4 @@ public class Dijkstra {
         double distancia = resultado.getDistancia(destino);
         return distancia != Double.MAX_VALUE;
     }
-    
 }

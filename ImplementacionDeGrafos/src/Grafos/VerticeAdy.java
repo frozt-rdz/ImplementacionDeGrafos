@@ -14,7 +14,7 @@ import java.util.List;
 public class VerticeAdy {
 
     public String nombre;
-    public List<Integer> lad; // Lista de adyacencia (índices de vértices destino)
+    public List<Arco> lad; // Lista de adyacencia (índices de vértices destino)
 
     public VerticeAdy(String nom) {
         this.nombre = nom;
