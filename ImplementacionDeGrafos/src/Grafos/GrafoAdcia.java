@@ -160,7 +160,7 @@ public class GrafoAdcia {
         for (int i = 0; i < g.numeroDeVertices(); i++) {
             m[i] = CLAVE;//Distancias en -1
         }
-<<<<<<< HEAD
+
         m[v] = 0;
         pila.push(v);
            
