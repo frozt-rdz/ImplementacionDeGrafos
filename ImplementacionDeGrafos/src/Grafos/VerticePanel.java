@@ -14,7 +14,7 @@ public class VerticePanel extends Vertice {;
     public VerticePanel(int x, int y, String z) {
         this.x = x;
         this.y = y;
-        super(z);
+        super(z);    
     }
 
     public int getX() {
