@@ -11,8 +11,8 @@ public class GrafoMatriz {
 
     int numVerts;
     static int MaxVerts = 20;
-    Vertice[] verts;
-    int[][] matAd;
+    public Vertice[] verts;
+    public int[][] matAd;
     private static final int CLAVE = -1;
 
     public GrafoMatriz(int mx) {
