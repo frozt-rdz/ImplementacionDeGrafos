@@ -30,8 +30,8 @@ public class Arco {
         return destino;
     }
 
-    public boolean equals(Object n) {
-        Arco a = (Arco) n;
-        return destino == a.destino;
-    }
+//    public boolean equals(Object n) {
+//        Arco a = (Arco) n;
+//        return destino == a.destino;
+//    }
 }

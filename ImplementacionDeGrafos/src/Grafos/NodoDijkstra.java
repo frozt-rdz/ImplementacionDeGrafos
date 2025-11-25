@@ -24,12 +24,4 @@ public class NodoDijkstra implements Comparable<NodoDijkstra> {
     public int compareTo(NodoDijkstra otro) {
         return Double.compare(this.distancia, otro.distancia);
     }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        NodoDijkstra that = (NodoDijkstra) obj;
-        return vertice == that.vertice;
-    }
 }

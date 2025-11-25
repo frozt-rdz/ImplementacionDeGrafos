@@ -6,7 +6,7 @@ import java.util.LinkedList;
  * @author Briana Brito Mtz
  */
 public class Vertice {
-    String nombre;
+    public String nombre;
     int numvertice;
     LinkedList<Object> lad;
     

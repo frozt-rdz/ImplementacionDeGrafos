@@ -13,6 +13,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
@@ -43,13 +44,17 @@ public class Visualizador extends javax.swing.JPanel {
     VerticePanel primero;
     VerticePanel nodoMoviendo=null;//:p
     GrafoMatriz grafo;
+    ArrayList<Point> estrellitas=new ArrayList();
+    boolean modoEspecial;
+    // Muy interesante la clase Point!
+    // https://docs.oracle.com/javase/8/docs/api/java/awt/Point.html
     
     public Visualizador(ArrayList<VerticePanel> v,GrafoMatriz g) {
         initComponents();
         vertices = v;
         arcos = new ArrayList();
         grafo = g;
-        setPreferredSize(new Dimension(618,300));
+//        SsetPreferredSize(new Dimension(650,300));
         this.setBackground(Color.WHITE);
         
         // Detectar click! con mouseListenter
@@ -84,6 +89,13 @@ public class Visualizador extends javax.swing.JPanel {
                 }
             }
         });
+        
+        // generar 100 estrellas al azaar
+        for(int i=0; i<100; i++){
+            int x = (int)(Math.random() * 800);
+            int y = (int)(Math.random() * 600);
+            estrellitas.add(new Point(x, y));
+        }
         
     }
 
@@ -125,15 +137,35 @@ public class Visualizador extends javax.swing.JPanel {
         Font fuenteBonita = new Font("Segoe UI", Font.BOLD ,14); 
         Font fuentePeso = new Font("Segoe UI", Font.BOLD ,18); 
         
+        if(modoEspecial){
+            g2d.setColor(Color.BLACK);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+            
+            g2d.setColor(Color.WHITE);
+            for(Point p:estrellitas){
+                g2d.fillOval(p.x, p.y, 2, 2); // 2x2 pixeles, cada puntitio
+            }
+        } else {
+            // Fondo Blanco Normal
+            g2d.setColor(Color.WHITE);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+        }
+        
         for(ArcoPanel e: arcos){
             int Ix = e.getInicio().getX();
             int Iy = e.getInicio().getY();
             
             int Fx = e.getFin().getX();
             int Fy = e.getFin().getY();
+            
+            if(modoEspecial) g2d.setColor(Color.LIGHT_GRAY);
+            else {
+                if(valorado) g2d.setColor(Color.GRAY);
+                else g2d.setColor(Color.BLACK);
+            }
+            
             g2d.setStroke(new BasicStroke(2));
             
-            if(valorado) g2d.setColor(Color.GRAY);
             g2d.drawLine(Ix,Iy,Fx,Fy);
             
             // tan tan tann, ahora, y si es bucle?
@@ -141,27 +173,63 @@ public class Visualizador extends javax.swing.JPanel {
                 g2d.setColor(Color.ORANGE);
                 g2d.drawOval(Ix-23,Iy-23, RADIO,RADIO);
                 g2d.setColor(Color.BLACK);
+                //yep
             }
         }
         
         g2d.setColor(Color.BLACK);
         
-        for(VerticePanel u:vertices){
-            int x = u.getX();
-            int y = u.getY();
-            int r= DIAMETRO/2;
+        
+        for(VerticePanel u : vertices){
+            int r = RADIO;  
+            int cx = u.getX();        
+            int cy = u.getY();        
             
-            g2d.setColor(Color.WHITE);
-            g2d.fillOval(x-r, y-r, DIAMETRO, DIAMETRO);
+            int dx = cx - r;       
+            int dy = cy - r;
+            
+            if(modoEspecial){
+                
+                Color colorNodo = u.getColor();
+                if(colorNodo.equals(Color.WHITE)) colorNodo = new Color(100, 100, 150); 
 
-            g2d.setColor(Color.BLACK);
-            g2d.setStroke(new BasicStroke(2));
-            g2d.drawOval(x-r, y-r, DIAMETRO, DIAMETRO);
-            
-            g2d.setFont(fuenteBonita);
-            g2d.setColor(Color.BLUE);
-            g2d.drawString(u.getNombre(), x-4, y+4);
-            
+                //Gradiente: Foco de luz en la esquina superior izquierda 
+                java.awt.RadialGradientPaint planeta = new java.awt.RadialGradientPaint(
+                    new java.awt.geom.Point2D.Float(dx + 10, dy + 10),  // empieza el blanco, Pto luz esquina superior izq
+                    DIAMETRO, // que tan lejos llegara el degradado?-> Hasta el diametro
+                    new float[] { 0.0f, 1.0f }, // porcentajes de distancia desde el foco de luz!
+                        // de 0 a 100%
+                    new Color[] { Color.WHITE, colorNodo } // el color va desde blanco hasta el color del nodo!
+                );
+                // https://docs.oracle.com/javase/8/docs/api/java/awt/RadialGradientPaint.html
+                // :p, interesantisimo!
+                
+                g2d.setPaint(planeta);
+                g2d.fillOval(dx, dy, DIAMETRO, DIAMETRO);
+                
+                g2d.setColor(new Color(255, 255, 255, 50));
+                g2d.setStroke(new BasicStroke(1));
+                g2d.drawOval(dx, dy, DIAMETRO, DIAMETRO);
+
+                g2d.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                g2d.setColor(Color.BLACK); 
+                g2d.drawString(u.getNombre(), cx - 3, cy + 5);
+                g2d.setColor(Color.WHITE);
+                g2d.drawString(u.getNombre(), cx - 4, cy + 4);
+                
+            } else {
+                g2d.setColor(u.getColor());
+                g2d.fillOval(dx, dy, DIAMETRO, DIAMETRO);
+
+                g2d.setColor(Color.BLACK);
+                g2d.setStroke(new BasicStroke(2));
+                g2d.drawOval(dx, dy, DIAMETRO, DIAMETRO);
+
+                g2d.setFont(fuenteBonita);
+                g2d.setColor(Color.BLUE);
+                
+                g2d.drawString(u.getNombre(), cx - 4, cy + 4);
+            }
         }
         
         if(dirigido){
@@ -234,7 +302,7 @@ public class Visualizador extends javax.swing.JPanel {
             vertices.add(u);
             grafo.nuevoVertice(s);
             repaint();
-            
+            grafo.mostrarMatriz();
             if(alAgregarArco!=null){
                 alAgregarArco.run();
             }
@@ -249,16 +317,30 @@ public class Visualizador extends javax.swing.JPanel {
                 }else {
                     // Se selecciona otro nodo
                     System.out.println("Segundo " +u.getNombre());
-                    ArcoPanel e;
+                    ArcoPanel e; // e = edge:)
                     if(!valorado){
-                        e = new ArcoPanel(primero,u); // e = edge:)
+                        e = new ArcoPanel(primero,u);
+                        
+                        try {
+                            grafo.nuevoArco(primero.getNombre(), u.getNombre());
+                        } catch (Exception ex) {
+                            Logger.getLogger(Visualizador.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
                         
                     }else{
                         peso = Integer.parseInt(JOptionPane.showInputDialog("Peso: "));
                         e = new ArcoPanel(primero,u,peso);
+                        
+                        try {
+                            grafo.nuevoArco(primero.getNombre(), u.getNombre(), peso);
+                        } catch (Exception ex) {
+                            Logger.getLogger(Visualizador.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
                     }
                     arcos.add(e);
-                    
+                    grafo.mostrarMatriz();
                     primero = null;
                     repaint();
                     
@@ -286,7 +368,30 @@ public class Visualizador extends javax.swing.JPanel {
         return null;
     }
     
-    
+    public void pintarCompConexas() {
+        int[] grupos = grafo.encontrarComponentes();
+        
+        // generar colores aleatorios, segun la cantidad de vertices!
+        // asi que habra para todos jeje
+        Color[] paleta = new Color[vertices.size()];
+        for(int i=0; i<paleta.length; i++){
+            // Generamos un color pastel aleatorio para que se vea bonito
+            float r = (float)(Math.random() / 2f + 0.5f);
+            float g = (float)(Math.random() / 2f + 0.5f);
+            float b = (float)(Math.random() / 2f + 0.5f);
+            paleta[i] = new Color(r, g, b);
+        }
+
+        // Asignamos los colores a los paneles
+        // OJO, aca asumimos que el orden de los vertices coincide con los índices de la matriz 0,1,2...
+        for(int i=0; i<vertices.size(); i++){
+            int idGrupo = grupos[i];
+            if(idGrupo >= 0){
+                vertices.get(i).setColor(paleta[idGrupo]);
+            }
+        }
+        repaint();
+    }
     
     public boolean isDirigido() {
         return dirigido;
@@ -314,6 +419,7 @@ public class Visualizador extends javax.swing.JPanel {
     
     public void setAlAgregar(Runnable alAgregar) {
         this.alAgregarArco = alAgregar;
+        
     }
     
     public void eliminarArco(ArcoPanel e){
@@ -321,6 +427,16 @@ public class Visualizador extends javax.swing.JPanel {
         repaint();
     }
 
+    public boolean isModoEspecial() {
+        return modoEspecial;
+    }
+
+    public void setModoEspecial(boolean modoEspecial) {
+        this.modoEspecial = modoEspecial;
+    }
+
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }
